@@ -1,11 +1,6 @@
-# Product micro service
-
-## Overview
-This microservice **handles product CRUD operations and sends product details to Kafka**.
-
+# Ecommerce service
 
 ## Components
-**Product Service**
 - Model
   - Product (id, name, product, description)
 - Controller
@@ -25,28 +20,16 @@ This microservice **handles product CRUD operations and sends product details to
   - KafkaConfig
   - SecurityConfig
 
-## Request Body: JSON
-```json
-{
-"name": "Product 1",
-"price": 19.99,
-"description": "Product 1 description"
-}
-```
 
 ## Technologies Used
 - Java 17
 - Spring Boot 3.4.2
 - Spring WebFlux
 - Spring Data JPA
-- MySQL
+- MySQL (Amazon RDS)
 - Kafka
 - Docker (for running Kafka)
 - Swagger-UI (for API documentation)
-
-## Spring Security
-- Username: admin
-- Password: password
 
 ## Steps to Run the Application
 
@@ -72,7 +55,7 @@ To stop and remove Containers, run
 
 **Run the Application**:
 - Clone and open the repository in your IDE (e.g., IntelliJ).
-- Set up the MySQL database:
+- Set up the MySQL database locally:
   - Create a database named `your_database_name`.
   - Update the `application.yaml` file with your database details.
     Example:

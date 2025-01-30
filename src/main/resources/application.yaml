@@ -1,7 +1,7 @@
 spring:
   datasource:
     url: ${DB_URL}
-#    jdbc:mysql://localhost:3306/ecommerce?useSSL=false
+#   url: jdbc:mysql://localhost:3306/ecommerce?useSSL=false
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -16,13 +16,11 @@ spring:
       path: /swagger-ui.html
   security:
     user:
-      name: admin
-      password: password
+      name: ${USER_NAME}
+      password: ${USER_PASSWORD}
   logging:
     level:
       org.springframework.security: DEBUG
-#  kafka:
-#    bootstrap-servers: localhost:9092
   kafka:
     consumer:
       bootstrap-servers: localhost:9092
