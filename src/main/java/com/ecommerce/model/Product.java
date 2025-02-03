@@ -13,6 +13,14 @@ public class Product {
     private double price;
     private String description;
 
+    // Default constructor (required by JPA)
+    public Product() {}
+
+    public Product(String name, double price, String description) {
+        this.name = name;
+        this.price = price;
+        this.description = description;
+    }
 
     public Long getId() {
         return id;
@@ -44,6 +52,17 @@ public class Product {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    // toString method for debugging
+    @Override
+    public String toString() {
+        return "Product{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", price=" + price +
+                ", description='" + description + '\'' +
+                '}';
     }
 
 }

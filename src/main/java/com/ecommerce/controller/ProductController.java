@@ -29,7 +29,7 @@ public class ProductController {
 //    }
 
     //Creating a product
-    @Operation(summary = "createProduct", description = "This method created a product")
+    @Operation(summary = "createProduct", description = "Creates a product")
     @PostMapping
     public ResponseEntity<Product> createProduct(@RequestBody Product product) {
 
@@ -52,7 +52,7 @@ public class ProductController {
 
 
     //Get details of all products
-    @Operation(summary = "getAllProducts", description = "This method retrives all products")
+    @Operation(summary = "getAllProducts", description = "Retrieves all products")
     @GetMapping
     public ResponseEntity<List<Product>> getAllProducts() {
 
@@ -73,7 +73,7 @@ public class ProductController {
 
 
     //Get details of a product based on Id
-    @Operation(summary = "getProductById", description = "This method retrieves product details based on Id")
+    @Operation(summary = "getProductById", description = "Retrieves product details based on productId")
     @GetMapping("/{id}")
     public ResponseEntity<Product> getProductById(@PathVariable("id") Long id) {
         try {
@@ -94,7 +94,7 @@ public class ProductController {
 
 
     //Update details of a product based on Id
-    @Operation(summary = "createProduct", description = "This method updates a product based on Id")
+    @Operation(summary = "createProduct", description = "Updates a product based on productId")
     @PutMapping("/{id}")
     public ResponseEntity<Product> updateProduct(@PathVariable Long id, @RequestBody Product product) {
         try {
@@ -120,7 +120,7 @@ public class ProductController {
 
 
     //Delete a product based on Id
-    @Operation(summary = "deleteProduct", description = "This method deletes a product based on Id")
+    @Operation(summary = "deleteProduct", description = "Deletes a product based on productId")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteProduct(@PathVariable Long id) {
         try {

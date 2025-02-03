@@ -7,8 +7,13 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     hibernate:
-      ddl-auto: update
-    database-platform: org.hibernate.dialect.MySQL8Dialect
+      ddl-auto: update # Automatically updates DB schema
+    database-platform: org.hibernate.dialect.MySQL8Dialect # Ensures compatibility with MySQL 8
+    show-sql: true  # Shows SQL queries in the logs
+    properties:
+      hibernate:
+        format_sql: true  # Formats SQL queries for better readability
+        dialect: org.hibernate.dialect.MySQL8Dialect
   springdoc:
     api-docs:
       path: /api-docs
@@ -20,7 +25,14 @@ spring:
       password: ${USER_PASSWORD}
   logging:
     level:
-      org.springframework.security: DEBUG
+      root: INFO # General log level for the application
+      org.springframework: DEBUG # Debug logs for the Spring Framework
+      org.springframework.web: DEBUG # Logs related to web requests (Controllers, Filters, etc.)
+      org.springframework.boot: DEBUG # Logs Spring Boot initialization and configurations
+      org.hibernate.SQL: DEBUG # Logs all SQL queries executed by Hibernate
+      org.hibernate.type.descriptor.sql.BasicBinder: TRACE  # Shows SQL query parameters
+      org.springframework.security: DEBUG # Logs authentication and authorization details
+      org.springframework.kafka: DEBUG
   kafka:
     consumer:
       bootstrap-servers: localhost:9092

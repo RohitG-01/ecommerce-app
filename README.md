@@ -1,38 +1,77 @@
-# Ecommerce service
+# E-Commerce Application
+This project is a backend service for an e-commerce application, built using **Spring Boot** and **Jakarta Persistence API (JPA)**. It provides the foundational data models required to manage products, shopping carts, and orders.
 
-## Components
-- Model
-  - Product (id, name, product, description)
-- Controller
-  - ProductController
-  - HomeController
-- Service
-  - ProductService (business logic)
-- Repository
-  - ProductRepository (database interaction)
-- Kafka
-  - ProductProducer (sends product data to Kafka)
-- Exception
-  - GlobalExceptionHandler (global exception handler to handle exceptions across the application)
-  - ProductServiceException (custom exception class to handle specific errors)
-  - ProductNotFoundException (custom exception class to handle product not found error)
-- Config
-  - KafkaConfig
-  - SecurityConfig
 
+## Features
+- **Product Management**: Define and store product details such as name, price, and description.
+- **Shopping Cart**: Users can add/remove products to/from their shopping carts.
+- **Order Processing**: Users can place orders, and the system manages order status and order items.
+
+
+## ER Diagram Representation
+```mermaid
+erDiagram
+    PRODUCT {
+        Long id
+        String name
+        double price
+        String description
+    }
+
+    CART {
+        Long id
+        Long customerId
+    }
+
+    CART_ITEM {
+        Long id
+        Long productId
+        int quantity
+    }
+
+    ORDER {
+        Long id
+        Long customerId
+        double totalAmount
+        String status
+    }
+
+    ORDER_ITEM {
+        Long id
+        Long productId
+        int quantity
+        double price
+    }
+
+    CUSTOMER {
+        Long id
+        String name
+        String email
+    }
+```
+- Product is associated with CartItem and OrderItem, allowing it to be part of both a cart and an order.
+- CartItem belongs to both Cart and Product.
+- OrderItem belongs to both Order and Product.
+
+## Flow of Data
+1. **Adding a Product to the Cart:** A user selects a Product and adds it to their Cart as a CartItem.
+2. **Placing an Order:** When the user proceeds to checkout, the CartItems are converted into OrderItems, and an Order is created.
+3. **Processing the Order:** The Order stores the list of OrderItems with prices and quantities.
+4. **Completing the Purchase:** The order is processed, and the order status is updated.
 
 ## Technologies Used
 - Java 17
 - Spring Boot 3.4.2
-- Spring WebFlux
 - Spring Data JPA
+- Hibernate (ORM)
+- Jakarta Persistence API (JPA)
 - MySQL (Amazon RDS)
 - Kafka
 - Docker (for running Kafka)
 - Swagger-UI (for API documentation)
 
-## Steps to Run the Application
 
+## Steps to Run the Application
 **Set up Kafka using Docker**:
 1. Install [Docker](https://www.docker.com/)
 2. Verify Docker by executing the following command:
@@ -73,91 +112,6 @@ To stop and remove Containers, run
 - Open the browser and navigate to `http://localhost:8080` for the application API.
 - Use Postman or any API client to interact with the API.
 
-### API Endpoints
-
-#### Create a Product
-
-- **URL**: `/products`
-- **Method**: `POST`
-- **Request Body**:
-    ```json
-    {
-      "name": "Product 1",
-      "price": 19.99,
-      "description": "Product 1 description"
-    }
-    ```
-- **Response**:
-    - Status: `201 Created`
-    - Body:
-    ```json
-    {
-      "id": 1,
-      "name": "Product 1",
-      "price": 19.99,
-      "description": "Product 1 description"
-    }
-    ```
-
-#### Get All Products
-
-- **URL**: `/products`
-- **Method**: `GET`
-- **Response**:
-    ```json
-    [
-      {
-        "id": 1,
-        "name": "Product 1",
-        "price": 19.99,
-        "description": "Product 1 description"
-      },
-      {
-        "id": 2,
-        "name": "Product 2",
-        "price": 29.99,
-        "description": "Product 2 description"
-      }
-    ]
-    ```
-
-#### Get Product By Id
-
-- **URL**: `/products/1`
-- **Method**: `GET`
-- **Response**:
-    ```json
-    [
-      {
-        "id": 1,
-        "name": "Product 1",
-        "price": 19.99,
-        "description": "Product 1 description"
-      }
-    ]
-    ```
-
-#### Update Product By Id
-
-- **URL**: `/products/2`
-- **Method**: `PUT`
-- **Response**:
-    ```json
-    [
-      {
-        "id": 2,
-        "name": "Product 2",
-        "price": 29.99,
-        "description": "Product 2 description updated"
-      }
-    ]
-    ```
-
-#### Delete Product By Id
-
-- **URL**: `/products/2`
-- **Method**: `DELETE`
-- **Response**: 204 No Content
 
 ### Configuration
 
@@ -166,5 +120,5 @@ To stop and remove Containers, run
 
 ### Swagger UI
 
-Swagger UI is available at the following URL: `http://localhost:8080/swagger-ui/index.html`
+Access Swagger UI at the following URL: `http://localhost:8080/swagger-ui/index.html`
 
