@@ -1,5 +1,6 @@
 package com.ecommerce.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.*;
@@ -13,12 +14,11 @@ public class Cart {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private Long customerId; // ID of the customer who owns the cart
 
-    public Cart(Long customerId, List<CartItem> items) {
-        this.customerId = customerId;
-        this.items = items;
-    }
+    @OneToOne
+    @JoinColumn(name = "customer_id", nullable = false)
+    @JsonBackReference // Prevents infinite recursion
+    private Customer customer;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "cart_id")
@@ -26,6 +26,11 @@ public class Cart {
 
     // Default constructor (required by JPA)
     public Cart() {}
+
+    public Cart(Customer customer, List<CartItem> items) {
+        this.customer = customer;
+        this.items = items;
+    }
 
     public Long getId() {
         return id;
@@ -35,12 +40,12 @@ public class Cart {
         this.id = id;
     }
 
-    public Long getCustomerId() {
-        return customerId;
+    public Customer getCustomer() {
+        return customer;
     }
 
-    public void setCustomerId(Long customerId) {
-        this.customerId = customerId;
+    public void setCustomer(Customer customer) {
+        this.customer = customer;
     }
 
     public List<CartItem> getItems() {
@@ -66,7 +71,7 @@ public class Cart {
     public String toString() {
         return "Cart{" +
                 "id=" + id +
-                ", customerId=" + customerId +
+                ", customer=" + customer +
                 ", items=" + items +
                 '}';
     }

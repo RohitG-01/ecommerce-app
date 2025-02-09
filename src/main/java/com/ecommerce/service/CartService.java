@@ -3,12 +3,15 @@ package com.ecommerce.service;
 import com.ecommerce.exception.CartServiceException;
 import com.ecommerce.model.Cart;
 import com.ecommerce.model.CartItem;
+import com.ecommerce.model.Customer;
 import com.ecommerce.model.Product;
 import com.ecommerce.repository.CartRepository;
+import com.ecommerce.repository.CustomerRepository;
 import com.ecommerce.repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Optional;
 
 @Service
@@ -18,53 +21,50 @@ public class CartService {
     private CartRepository cartRepository;
 
     @Autowired
+    private CustomerRepository customerRepository;
+
+    @Autowired
     private ProductRepository productRepository;
 
-    public Cart getCart(Long customerId) {
-        try {
-            return cartRepository.findByCustomerId(customerId)
-                    .orElseGet(() -> {
-                        Cart cart = new Cart(); // Use the default constructor
-                        cart.setCustomerId(customerId);
-                        return cartRepository.save(cart);
-                    });
-        } catch (Exception ex) {
-            throw new CartServiceException("Failed to retrieve cart: " + ex.getMessage(), ex);
-        }
 
+    // Helper method to get or create a cart for a customer
+    public Cart getOrCreateCart(Long customerId) {
+        return cartRepository.findByCustomerId(customerId)
+                .orElseGet(() -> {
+                    Customer customer = customerRepository.findById(customerId)
+                            .orElseThrow(() -> new CartServiceException("Customer not found: " + customerId));
+                    Cart newCart = new Cart();
+                    newCart.setCustomer(customer);
+                    return cartRepository.save(newCart);
+                });
     }
-    public String addToCart(Long customerId, Long productId, int quantity) {
+
+
+    public Cart addToCart(Long customerId, Long productId, int quantity) {
         try {
-            // Validate quantity
-            if (quantity <= 0) {
-                throw new CartServiceException("Quantity must be greater than 0");
+            validateQuantity(quantity);
+            Product product = getProductById(productId);
+            Cart cart = getOrCreateCart(customerId);
+
+            // Ensure the cart items list is initialized
+            if (cart.getItems() == null) {
+                cart.setItems(new ArrayList<>());
             }
 
-            // Check if the product exists
-            Product product = productRepository.findById(productId)
-                    .orElseThrow(() -> new CartServiceException("Product not found: " + productId));
-
-            Cart cart = getCart(customerId);
-
-            // Check if the product already exists in the cart
             Optional<CartItem> existingItem = cart.getItems().stream()
                     .filter(item -> item.getProductId().equals(productId))
                     .findFirst();
 
             if (existingItem.isPresent()) {
-                // Update the quantity if the product is already in the cart
+                // Update existing quantity
                 existingItem.get().setQuantity(existingItem.get().getQuantity() + quantity);
-                cartRepository.save(cart);
-                return "Product with ID " + productId + ", quantity updated to " + existingItem.get().getQuantity() + ", in the cart of customer with ID " + customerId;
             } else {
-                // Add a new item to the cart
-                CartItem newItem = new CartItem();
-                newItem.setProductId(productId);
-                newItem.setQuantity(quantity);
-                cart.getItems().add(newItem);
-                cartRepository.save(cart);
-                return quantity + " Quantity of " + product.getName() + " with ProductID " + productId + ", added to the cart of customer with ID " + customerId;
+                // Add new item to the cart
+                cart.getItems().add(new CartItem(productId, quantity));
             }
+
+            return cartRepository.save(cart);
+//            return buildCartMessage(product, productId, quantity, customerId, existingItem.isPresent());
         } catch (CartServiceException ex) {
             throw ex;
         } catch (Exception ex) {
@@ -72,24 +72,17 @@ public class CartService {
         }
     }
 
-    public String removeFromCart(Long customerId, Long productId) {
+    public void removeFromCart(Long customerId, Long productId) {
         try {
-            Cart cart = getCart(customerId);
+            Cart cart = getOrCreateCart(customerId);
+            CartItem itemToRemove = findCartItem(cart, productId);
 
-            // Find the item to remove
-            Optional<CartItem> itemToRemove = cart.getItems().stream()
-                    .filter(item -> item.getProductId().equals(productId))
-                    .findFirst();
+            // Remove the item from the cart
+            cart.getItems().remove(itemToRemove);
+            cartRepository.save(cart);
 
-            if (itemToRemove.isPresent()) {
-
-                // Remove the item from the cart
-                cart.getItems().remove(itemToRemove.get());
-                cartRepository.save(cart);
-                return "Product with ID " + productId + " has been removed from the cart of customer with ID " + customerId;
-            } else {
-                throw new CartServiceException("Product with ID " + productId + " not found in the cart of customer with ID " + customerId);
-            }
+        } catch (CartServiceException ex) {
+            throw ex;
         } catch (Exception ex) {
             throw new CartServiceException("Failed to remove product from cart: " + ex.getMessage(), ex);
         }
@@ -97,11 +90,36 @@ public class CartService {
 
     public void clearCart(Long customerId) {
         try {
-            Cart cart = getCart(customerId);
+            Cart cart = getOrCreateCart(customerId);
             cart.getItems().clear();
             cartRepository.save(cart);
         } catch (Exception ex) {
             throw new CartServiceException("Failed to clear cart: " + ex.getMessage(), ex);
         }
     }
+
+
+    // Helper method to validate quantity
+    private void validateQuantity(int quantity) {
+        if (quantity <= 0) {
+            throw new CartServiceException("Quantity must be greater than 0");
+        }
+    }
+
+    // Helper method to get product by ID
+    private Product getProductById(Long productId) {
+        return productRepository.findById(productId)
+                .orElseThrow(() -> new CartServiceException("Product not found: " + productId));
+    }
+
+
+    // Helper method to find a cart item
+    private CartItem findCartItem(Cart cart, Long productId) {
+        return cart.getItems().stream()
+                .filter(item -> item.getProductId().equals(productId))
+                .findFirst()
+                .orElseThrow(() -> new CartServiceException("Product with ID " + productId +
+                        " not found in the cart of customer with ID " + cart.getCustomer().getId()));
+    }
+
 }

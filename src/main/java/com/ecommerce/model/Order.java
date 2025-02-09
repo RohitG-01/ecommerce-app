@@ -1,5 +1,6 @@
 package com.ecommerce.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -15,7 +16,12 @@ public class Order {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY) //database auto-increments the primary key value
     private Long id;
-    private Long customerId; // ID of the customer who placed the order
+
+    @ManyToOne
+    @JoinColumn(name = "customer_id", nullable = false)
+    @JsonBackReference // Prevents infinite recursion
+    private Customer customer;
+
     private double totalAmount; // Total amount of the order
     private String status; // Status of the order (e.g., "CREATED", "PAID")
 
@@ -27,8 +33,8 @@ public class Order {
     public Order() {}
 
     // Parameterized constructor
-    public Order(Long customerId, double totalAmount, String status, List<OrderItem> items) {
-        this.customerId = customerId;
+    public Order(Customer customer, double totalAmount, String status, List<OrderItem> items) {
+        this.customer = customer;
         this.totalAmount = totalAmount;
         this.status = status;
         this.items = items;
@@ -43,12 +49,12 @@ public class Order {
         this.id = id;
     }
 
-    public Long getCustomerId() {
-        return customerId;
+    public Customer getCustomer() {
+        return customer;
     }
 
-    public void setCustomerId(Long customerId) {
-        this.customerId = customerId;
+    public void setCustomer(Customer customer) {
+        this.customer = customer;
     }
 
     public double getTotalAmount() {
@@ -90,7 +96,7 @@ public class Order {
     public String toString() {
         return "Order{" +
                 "id=" + id +
-                ", customerId=" + customerId +
+                ", customer=" + customer +
                 ", totalAmount=" + totalAmount +
                 ", status='" + status + '\'' +
                 ", items=" + items +

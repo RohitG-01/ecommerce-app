@@ -1,5 +1,6 @@
 package com.ecommerce.controller;
 
+import com.ecommerce.dto.CartResponseDTO;
 import com.ecommerce.model.Cart;
 import com.ecommerce.service.CartService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -18,12 +19,12 @@ public class CartController {
     // Add to cart endpoint
     @Operation(summary = "addToCart", description = "Adds product to cart based on customerId, productId and Quantity")
     @PostMapping("/add")
-    public ResponseEntity<String> addToCart(
+    public ResponseEntity<Cart> addToCart(
             @RequestParam Long customerId,
             @RequestParam Long productId,
             @RequestParam int quantity) {
-            String message = cartService.addToCart(customerId, productId, quantity);
-            return ResponseEntity.status(HttpStatus.CREATED).body(message);
+            Cart cart = cartService.addToCart(customerId, productId, quantity);
+            return ResponseEntity.status(HttpStatus.CREATED).body(cart);
     }
 
 
@@ -33,19 +34,28 @@ public class CartController {
     // May be Create a new postMapping for it?
     @Operation(summary = "removeFromCart", description = "Removes product from cart based on customerId and productId")
     @PostMapping("/remove")
-    public ResponseEntity<String> removeFromCart(
+    public ResponseEntity<Cart> removeFromCart(
             @RequestParam Long customerId,
             @RequestParam Long productId) {
-        String message = cartService.removeFromCart(customerId, productId);
-        return ResponseEntity.ok(message);
+            cartService.removeFromCart(customerId, productId);
+            return ResponseEntity.noContent().build();
+    }
+
+
+    // Clear entire cart endpoint
+    @Operation(summary = "clearCart", description = "Clears all products from the cart for the given customerId")
+    @DeleteMapping("/clear")
+    public ResponseEntity<Cart> clearCart(@RequestParam Long customerId) {
+        cartService.clearCart(customerId);
+        return ResponseEntity.noContent().build();
     }
 
 
     // View cart details endpoint
-    @Operation(summary = "getCart", description = "Retrieves cart details based on customerId")
+    @Operation(summary = "getOrCreateCart", description = "Retrieves cart details based on customerId")
     @GetMapping
-    public ResponseEntity<Cart> getCart(@RequestParam Long customerId) {
-        Cart cart = cartService.getCart(customerId);
+    public ResponseEntity<Cart> getOrCreateCart(@RequestParam Long customerId) {
+        Cart cart = cartService.getOrCreateCart(customerId);
         return ResponseEntity.ok(cart);
     }
 }

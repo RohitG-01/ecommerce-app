@@ -24,34 +24,34 @@ public class OrderController {
 
     // Creating an order
     @Operation(summary = "createOrder", description = "Creates an order based on customerId")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "Order created successfully",
-                    content = @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = Order.class))),
-            @ApiResponse(responseCode = "400", description = "Bad request")
-    })
+//    @ApiResponses(value = {
+//            @ApiResponse(responseCode = "201", description = "Order created successfully",
+//                    content = @Content(mediaType = "application/json",
+//                            schema = @Schema(implementation = Order.class))),
+//            @ApiResponse(responseCode = "400", description = "Bad request")
+//    })
     @PostMapping
-    public ResponseEntity<String> createOrder(@RequestParam Long customerId) {
-        String message = orderService.createOrder(customerId);
-        return ResponseEntity.status(HttpStatus.CREATED).body(message);
+    public ResponseEntity<Order> createOrder(@RequestParam Long customerId) {
+        Order order = orderService.createOrder(customerId);
+        return ResponseEntity.status(HttpStatus.CREATED).body(order);
     }
 
 
     // Get all orders
     @Operation(summary = "getAllOrders", description = "Retrieves all orders")
     @GetMapping
-    public ResponseEntity<String> getAllOrders() {
-        String message = orderService.getAllOrders();
-        return ResponseEntity.ok(message);
+    public ResponseEntity<List<Order>> getAllOrders() {
+        List<Order> orders = orderService.getAllOrders();
+        return ResponseEntity.ok(orders);
     }
 
 
     // Get order by ID
     @Operation(summary = "getOrderById", description = "Retrieves an existing order based on orderId")
     @GetMapping("/{orderId}")
-    public ResponseEntity<String> getOrderById(@PathVariable Long orderId) {
-        String message = orderService.getOrderById(orderId);
-        return ResponseEntity.ok(message);
+    public ResponseEntity<Order> getOrderById(@PathVariable Long orderId) {
+        Order order = orderService.getOrderById(orderId);
+        return ResponseEntity.ok(order);
     }
 
 }
