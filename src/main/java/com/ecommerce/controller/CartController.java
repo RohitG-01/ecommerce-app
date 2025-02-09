@@ -1,6 +1,5 @@
 package com.ecommerce.controller;
 
-import com.ecommerce.dto.CartResponseDTO;
 import com.ecommerce.model.Cart;
 import com.ecommerce.service.CartService;
 import io.swagger.v3.oas.annotations.Operation;
