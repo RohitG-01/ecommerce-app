@@ -11,6 +11,8 @@ public class OrderItem {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private Long productId; // ID of the product
+    private String productName; // Name of the product
+    private String productDescription; // Description of the product
     private int quantity;   // Quantity of the product in the order
     private double price;   // Price of the product at the time of ordering
 
@@ -18,8 +20,10 @@ public class OrderItem {
     public OrderItem() {}
 
     // Parameterized constructor
-    public OrderItem(Long productId, int quantity, double price) {
+    public OrderItem(Long productId, String productName, String productDescription, int quantity, double price) {
         this.productId = productId;
+        this.productName = productName;
+        this.productDescription = productDescription;
         this.quantity = quantity;
         this.price = price;
     }
@@ -39,6 +43,22 @@ public class OrderItem {
 
     public void setProductId(Long productId) {
         this.productId = productId;
+    }
+
+    public String getProductName() {
+        return productName;
+    }
+
+    public void setProductName(String productName) {
+        this.productName = productName;
+    }
+
+    public String getProductDescription() {
+        return productDescription;
+    }
+
+    public void setProductDescription(String productDescription) {
+        this.productDescription = productDescription;
     }
 
     public int getQuantity() {
@@ -63,6 +83,8 @@ public class OrderItem {
         return "OrderItem{" +
                 "id=" + id +
                 ", productId=" + productId +
+                ", productName=" + productName +
+                ", productDescription=" + productDescription +
                 ", quantity=" + quantity +
                 ", price=" + price +
                 '}';

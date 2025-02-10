@@ -60,6 +60,8 @@ public class OrderService {
                 OrderItem orderItem;
                 orderItem = new OrderItem();
                 orderItem.setProductId(product.getId());
+                orderItem.setProductName(product.getName());
+                orderItem.setProductDescription(product.getDescription());
                 orderItem.setQuantity(cartItem.getQuantity());
                 orderItem.setPrice(product.getPrice());
                 order.getItems().add(orderItem);
