@@ -93,6 +93,10 @@ public class CartService {
             Cart cart = getOrCreateCart(customerId);
             cart.getItems().clear();
             cartRepository.save(cart);
+            // Delete the cart if it's empty
+            if (cart.getItems().isEmpty()) {
+                cartRepository.delete(cart);
+            }
         } catch (Exception ex) {
             throw new CartServiceException("Failed to clear cart: " + ex.getMessage(), ex);
         }

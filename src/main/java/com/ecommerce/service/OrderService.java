@@ -4,6 +4,7 @@ import com.ecommerce.exception.OrderNotFoundException;
 import com.ecommerce.exception.OrderServiceException;
 import com.ecommerce.kafka.OrderProducer;
 import com.ecommerce.model.*;
+import com.ecommerce.repository.CartRepository;
 import com.ecommerce.repository.CustomerRepository;
 import com.ecommerce.repository.OrderRepository;
 import com.ecommerce.repository.ProductRepository;
@@ -27,6 +28,9 @@ public class OrderService {
 
     @Autowired
     private CustomerRepository customerRepository;
+
+    @Autowired
+    private CartRepository cartRepository;
 
     @Autowired
     private OrderProducer orderProducer;
@@ -78,6 +82,16 @@ public class OrderService {
 
             // Clear the cart
             cartService.clearCart(customerId);
+
+            // Delete the cart if it is empty
+            if (cart.getItems().isEmpty()) {
+                cartRepository.delete(cart);
+            }
+
+            // Explicitly remove cart reference from customer
+            customer.setCart(null);
+
+            customerRepository.save(customer);  // Persist the change to database
 
             return savedOrder;
         } catch (OrderServiceException ex) {

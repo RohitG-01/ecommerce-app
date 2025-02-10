@@ -20,7 +20,7 @@ public class Cart {
     @JsonBackReference // Prevents infinite recursion
     private Customer customer;
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
     @JoinColumn(name = "cart_id")
     private List<CartItem> items = new ArrayList<>();
 
