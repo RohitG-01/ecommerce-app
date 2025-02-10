@@ -25,7 +25,7 @@ public class Order {
     private double totalAmount; // Total amount of the order
     private String status; // Status of the order (e.g., "CREATED", "PAID")
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @JoinColumn(name = "order_id")
     private List<OrderItem> items = new ArrayList<>();
 

@@ -22,8 +22,8 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
     }
 
-    // Handle OrderServiceException
-    @ExceptionHandler(OrderServiceException.class)
+    // Handle OrderServiceException & OrderNotFoundException
+    @ExceptionHandler({OrderServiceException.class, OrderNotFoundException.class})
     public ResponseEntity<String> handleOrderServiceException(OrderServiceException ex) {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
     }

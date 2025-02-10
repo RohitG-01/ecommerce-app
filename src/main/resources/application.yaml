@@ -9,7 +9,7 @@ spring:
     hibernate:
       ddl-auto: update # Automatically updates DB schema
     database-platform: org.hibernate.dialect.MySQL8Dialect # Ensures compatibility with MySQL 8
-    show-sql: true  # Shows SQL queries in the logs
+#    show-sql: true  # Shows SQL queries in the logs
     properties:
       hibernate:
         format_sql: true  # Formats SQL queries for better readability
@@ -17,8 +17,10 @@ spring:
   springdoc:
     api-docs:
       path: /api-docs
+      enabled: true
     swagger-ui:
       path: /swagger-ui.html
+      enabled: true
   security:
     user:
       name: ${USER_NAME}
@@ -28,8 +30,8 @@ spring:
       root: INFO # General log level for the application
       org.springframework: DEBUG # Debug logs for the Spring Framework
       org.springframework.web: DEBUG # Logs related to web requests (Controllers, Filters, etc.)
-      org.springframework.boot: DEBUG # Logs Spring Boot initialization and configurations
-      org.hibernate.SQL: DEBUG # Logs all SQL queries executed by Hibernate
+#      org.springframework.boot: DEBUG # Logs Spring Boot initialization and configurations
+#      org.hibernate.SQL: DEBUG # Logs all SQL queries executed by Hibernate
       org.hibernate.type.descriptor.sql.BasicBinder: TRACE  # Shows SQL query parameters
       org.springframework.security: DEBUG # Logs authentication and authorization details
       org.springframework.kafka: DEBUG

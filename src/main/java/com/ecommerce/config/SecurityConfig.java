@@ -23,13 +23,16 @@ public class SecurityConfig {
     //It customizes the HttpSecurity to apply certain security configurations to incoming HTTP requests.
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-//                .cors(cors -> cors.configurationSource(corsConfigurationSource())) // Enable CORS
-//                .csrf(csrf -> csrf.disable()) // Disable CSRF for API usage
+                .cors(cors -> cors.configurationSource(corsConfigurationSource())) // Enable CORS
+                .csrf(csrf -> csrf.disable()) // Disable CSRF for API usage
                 .csrf(AbstractHttpConfigurer::disable) // Disable CSRF since not needed for stateless API requests
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/products/**").permitAll() // Allow access to /products without authentication
                         .requestMatchers("/auth/login", "/auth/register").permitAll() // Allow login & registration
-                        .requestMatchers("/customers").permitAll()
+                        .requestMatchers("/customers/**").permitAll()
+                        .requestMatchers("/orders/**").permitAll()
+                        .requestMatchers("/cart/**").permitAll()
+                        .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
                         .anyRequest().authenticated() // Secure all other endpoints
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // Make session stateless

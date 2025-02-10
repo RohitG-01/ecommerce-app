@@ -1,13 +1,10 @@
 package com.ecommerce.controller;
 
+import com.ecommerce.exception.OrderNotFoundException;
+import com.ecommerce.exception.OrderServiceException;
 import com.ecommerce.model.Order;
-import com.ecommerce.model.OrderItem;
 import com.ecommerce.service.OrderService;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -52,6 +49,27 @@ public class OrderController {
     public ResponseEntity<Order> getOrderById(@PathVariable Long orderId) {
         Order order = orderService.getOrderById(orderId);
         return ResponseEntity.ok(order);
+    }
+
+
+    //Delete an order based on ID
+    @Operation(summary = "deleteOrderById", description = "Deletes a order based on orderId")
+    @DeleteMapping("/{orderId}")
+    public ResponseEntity<Void> deleteOrderById(@PathVariable Long orderId) {
+        try {
+            // Attempt to find the order by ID
+            Order order = orderService.getOrderById(orderId);
+
+            // Delete the order
+            orderService.deleteOrderById(orderId);
+
+            // Return a response indicating successful deletion
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).build(); // 204 No Content
+        } catch (OrderNotFoundException ex) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null); // Order not found
+        } catch (Exception ex) {
+            throw new OrderServiceException("Failed to delete order with ID: " + orderId, ex);
+        }
     }
 
 }

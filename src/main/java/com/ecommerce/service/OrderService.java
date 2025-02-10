@@ -1,5 +1,6 @@
 package com.ecommerce.service;
 
+import com.ecommerce.exception.OrderNotFoundException;
 import com.ecommerce.exception.OrderServiceException;
 import com.ecommerce.kafka.OrderProducer;
 import com.ecommerce.model.*;
@@ -10,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class OrderService {
@@ -102,6 +104,30 @@ public class OrderService {
                     .orElseThrow(() -> new OrderServiceException("Order not found with ID: " + orderId));
         } catch (Exception ex) {
             throw new OrderServiceException("Failed to retrieve order: " + ex.getMessage(), ex);
+        }
+    }
+
+    // Delete order by ID
+    public void deleteOrderById(Long orderId) {
+        try {
+            // Attempt to find the order by ID
+            Optional<Order> orderOptional = orderRepository.findById(orderId);
+
+            // If the order is not found, throw an exception
+            if (orderOptional.isPresent()) {
+                Order order = orderOptional.get();
+
+                // Clear associated order items
+                order.getItems().clear();
+                orderRepository.save(order); // Persist changes before deletion
+
+                // Delete order
+                orderRepository.delete(order);
+            } else {
+                throw new OrderNotFoundException("Order not found with ID: " + orderId);
+            }
+        } catch (Exception ex) {
+            throw new OrderServiceException("Failed to delete order with ID: " + orderId, ex);
         }
     }
 
