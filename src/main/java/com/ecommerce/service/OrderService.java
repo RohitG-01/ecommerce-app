@@ -126,23 +126,32 @@ public class OrderService {
     // Delete order by ID
     public void deleteOrderById(Long orderId) {
         try {
-            // Attempt to find the order by ID
-            Optional<Order> orderOptional = orderRepository.findById(orderId);
 
-            // If the order is not found, throw an exception
-            if (orderOptional.isPresent()) {
-                Order order = orderOptional.get();
-
-                // Clear associated order items
-                order.getItems().clear();
-                orderRepository.save(order); // Persist changes before deletion
-
-                // Delete order
-                orderRepository.delete(order);
-            } else {
+            if (!orderRepository.existsById(orderId)) {
                 throw new OrderNotFoundException("Order not found with ID: " + orderId);
             }
+
+            // Attempt to find the order or throw an exception if not found
+            Order order = orderRepository.findById(orderId)
+                    .orElseThrow(() -> new OrderNotFoundException("Order not found with ID: " + orderId));
+
+            // Clear and detach order items before deleting the order
+            order.getItems().clear();
+            orderRepository.save(order);  // Persist empty order before deletion
+
+            // Delete the order
+            orderRepository.delete(order);
+            
+            // Remove order from customer's order list
+            Customer customer = order.getCustomer();
+            if (customer != null) {
+                customer.getOrders().remove(order);
+                customerRepository.save(customer);
+            }
+        } catch (OrderNotFoundException ex) {
+            throw ex; // ✅ Rethrow if order does not exist (prevents catching as generic exception)
         } catch (Exception ex) {
+            ex.printStackTrace();
             throw new OrderServiceException("Failed to delete order with ID: " + orderId, ex);
         }
     }

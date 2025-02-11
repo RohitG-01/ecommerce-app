@@ -5,6 +5,7 @@ import com.ecommerce.exception.OrderServiceException;
 import com.ecommerce.model.Customer;
 import com.ecommerce.model.Order;
 import com.ecommerce.repository.CustomerRepository;
+import com.ecommerce.repository.OrderRepository;
 import com.ecommerce.service.CustomerService;
 import com.ecommerce.service.OrderService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -13,7 +14,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/orders")
@@ -24,6 +27,9 @@ public class OrderController {
 
     @Autowired
     private CustomerRepository customerRepository;
+
+    @Autowired
+    private OrderRepository orderRepository;
 
     // Creating an order
     @Operation(summary = "createOrder", description = "Creates an order based on customerId")
@@ -61,27 +67,24 @@ public class OrderController {
     //Delete an order based on ID
     @Operation(summary = "deleteOrderById", description = "Deletes a order based on orderId")
     @DeleteMapping("/{orderId}")
-    public ResponseEntity<Void> deleteOrderById(@PathVariable Long orderId) {
+    public ResponseEntity<Map<String, String>> deleteOrderById(@PathVariable Long orderId) {
         try {
             // Attempt to find the order by ID
             Order order = orderService.getOrderById(orderId);
 
-            // Ensure the order is removed from the customer's order list
-            Customer customer = order.getCustomer();
-            if (customer != null) {
-                customer.getOrders().remove(order);  // Remove order reference
-                customerRepository.save(customer);   // Persist updated customer
-            }
-
             // Delete the order
             orderService.deleteOrderById(orderId);
 
-            // Return a response indicating successful deletion
-            return ResponseEntity.status(HttpStatus.NO_CONTENT).build(); // 204 No Content
+            // Explicitly return 200 OK with success message
+            Map<String, String> response = new HashMap<>();
+            response.put("message", "Order deleted successfully");
+            return ResponseEntity.ok(response); // 200 OK
+
         } catch (OrderNotFoundException ex) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null); // Order not found
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", "Order not found")); // Order not found
         } catch (Exception ex) {
-            throw new OrderServiceException("Failed to delete order with ID: " + orderId, ex);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "Failed to delete order with ID: " + orderId));
         }
     }
 
