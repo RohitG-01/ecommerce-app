@@ -27,6 +27,7 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable()) // Disable CSRF for API usage
                 .csrf(AbstractHttpConfigurer::disable) // Disable CSRF since not needed for stateless API requests
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/**").permitAll()
                         .requestMatchers("/products/**").permitAll() // Allow access to /products without authentication
                         .requestMatchers("/auth/login", "/auth/register").permitAll() // Allow login & registration
                         .requestMatchers("/customers/**").permitAll()

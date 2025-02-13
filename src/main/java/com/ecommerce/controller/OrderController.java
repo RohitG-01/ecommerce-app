@@ -59,8 +59,12 @@ public class OrderController {
     @Operation(summary = "getOrderById", description = "Retrieves an existing order based on orderId")
     @GetMapping("/{orderId}")
     public ResponseEntity<Order> getOrderById(@PathVariable Long orderId) {
-        Order order = orderService.getOrderById(orderId);
-        return ResponseEntity.ok(order);
+        try {
+            Order order = orderService.getOrderById(orderId);
+            return ResponseEntity.ok(order);
+        } catch (OrderNotFoundException ex) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
     }
 
 

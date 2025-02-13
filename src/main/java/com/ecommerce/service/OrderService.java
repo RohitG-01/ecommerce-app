@@ -149,7 +149,7 @@ public class OrderService {
                 customerRepository.save(customer);
             }
         } catch (OrderNotFoundException ex) {
-            throw ex; // ✅ Rethrow if order does not exist (prevents catching as generic exception)
+            throw ex; // Rethrow if order does not exist (prevents catching as generic exception)
         } catch (Exception ex) {
             ex.printStackTrace();
             throw new OrderServiceException("Failed to delete order with ID: " + orderId, ex);

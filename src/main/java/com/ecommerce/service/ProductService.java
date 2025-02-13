@@ -75,6 +75,8 @@ public class ProductService {
 
             // Delete the product from the repository
             productRepository.deleteById(id);
+        } catch (ProductNotFoundException ex) {
+            throw ex; // Rethrow ProductNotFoundException directly
         } catch (Exception ex) {
             throw new ProductServiceException("Failed to delete product with ID: " + id, ex);
         }
