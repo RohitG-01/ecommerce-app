@@ -19,16 +19,8 @@ public class ProductService {
     public Product createProduct(Product product) {
 
         try {
-            // Validate product data
-            if (product.getName() == null || product.getName().isEmpty()) {
-                throw new ProductServiceException("Product name cannot be empty");
-            }
-            if (product.getPrice() <= 0) {
-                throw new ProductServiceException("Product price must be greater than 0");
-            }
-
-            // Save product to the database
-            return productRepository.save(product);
+            validateProduct(product);   // Validate product data
+            return productRepository.save(product);     // Save product to the database
         } catch (Exception ex) {
             // Log the exception and rethrow as a custom exception
             throw new ProductServiceException("Failed to create product: " + ex.getMessage(), ex);
@@ -79,6 +71,15 @@ public class ProductService {
             throw ex; // Rethrow ProductNotFoundException directly
         } catch (Exception ex) {
             throw new ProductServiceException("Failed to delete product with ID: " + id, ex);
+        }
+    }
+
+    private void validateProduct(Product product) {
+        if (product.getName() == null || product.getName().isEmpty()) {
+            throw new ProductServiceException("Product name cannot be empty");
+        }
+        if (product.getPrice() <= 0) {
+            throw new ProductServiceException("Product price must be greater than 0");
         }
     }
 }
