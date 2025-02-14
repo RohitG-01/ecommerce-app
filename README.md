@@ -39,6 +39,8 @@ erDiagram
     ORDER_ITEM {
         Long id
         Long productId
+        String productName
+        String productDescription
         int quantity
         double price
     }
@@ -47,6 +49,9 @@ erDiagram
         Long id
         String name
         String email
+        String password 
+        String phoneNumber
+        String address
     }
 ```
 - Product is associated with CartItem and OrderItem, allowing it to be part of both a cart and an order.
